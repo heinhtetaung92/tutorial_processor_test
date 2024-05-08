@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Page with Action Buttons and Log Area</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        #actionButtons {
+            margin-bottom: 20px;
+        }
+        #logArea {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse; /* Makes the log area fill the rest and display logs upside down */
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            function getRandomPromiseId() {
+                return Math.random().toString(36).substring(2, 15);
+            }
+
+            function logMessage(message) {
+                const logArea = document.getElementById('logArea');
+                const messageElement = document.createElement('div');
+                messageElement.textContent = message;
+                // Insert new messages at the top of the log area
+                logArea.prepend(messageElement);
+            }
+
+            document.getElementById('getButton').addEventListener('click', function() {
+                let message = {
+                    "module": "tutorial",
+                    "command": "get",
+                    "promise": getRandomPromiseId(),
+                    "params": ""
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+
+                if (window?.__native?.postJSONMessage) {
+                    window.__native.postJSONMessage(JSON.stringify(message));
+                } else {
+                    console.error('window.__native.postJSONMessage is not defined.');
+                    logMessage('Error: window.__native.postJSONMessage is not defined.');
+                }
+            });
+
+            // Placeholder event listeners for other buttons with logMessage calls
+            document.getElementById('cancelButton').addEventListener('click', function() {
+		let message = {
+                    "module": "tutorial",
+                    "command": "cancel",
+                    "promise": getRandomPromiseId(),
+                    "params": ""
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+
+                if (window?.__native?.postJSONMessage) {
+                    window.__native.postJSONMessage(JSON.stringify(message));
+                } else {
+                    console.error('window.__native.postJSONMessage is not defined.');
+                    logMessage('Error: window.__native.postJSONMessage is not defined.');
+                }
+            });
+
+            document.getElementById('completeButton').addEventListener('click', function() {
+		let data = {
+		    "last_page": 1,
+		    "total_pages": 3
+		}
+		let message = {
+                    "module": "tutorial",
+                    "command": "complete",
+                    "promise": getRandomPromiseId(),
+                    "params": JSON.stringify(data)
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+
+                if (window?.__native?.postJSONMessage) {
+                    window.__native.postJSONMessage(JSON.stringify(message));
+                } else {
+                    console.error('window.__native.postJSONMessage is not defined.');
+                    logMessage('Error: window.__native.postJSONMessage is not defined.');
+                }
+            });
+
+            document.getElementById('errorButton').addEventListener('click', function() {
+		let message = {
+                    "module": "tutorial",
+                    "command": "error",
+                    "promise": getRandomPromiseId(),
+                    "params": ""
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+
+                if (window?.__native?.postJSONMessage) {
+                    window.__native.postJSONMessage(JSON.stringify(message));
+                } else {
+                    console.error('window.__native.postJSONMessage is not defined.');
+                    logMessage('Error: window.__native.postJSONMessage is not defined.');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="actionButtons">
+        <button id="getButton">Get</button>
+        <button id="cancelButton">Cancel</button>
+        <button id="completeButton">Complete</button>
+        <button id="errorButton">Error</button>
+    </div>
+
+    <div id="logArea">
+        <h2 style="text-align: center;">Log Area</h2>
+    </div>
+</body>
+</html>
