@@ -21,101 +21,9 @@
             padding: 10px;
             overflow-y: auto;
             display: flex;
-            flex-direction: column-reverse; /* Makes the log area fill the rest and display logs upside down */
+            flex-direction: column-reverse;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            function getRandomPromiseId() {
-                return Math.random().toString(36).substring(2, 15);
-            }
-
-            function logMessage(message) {
-                const logArea = document.getElementById('logArea');
-                const messageElement = document.createElement('div');
-                messageElement.textContent = message;
-                // Insert new messages at the top of the log area
-                logArea.prepend(messageElement);
-            }
-
-            document.getElementById('getButton').addEventListener('click', function() {
-                let message = {
-                    "module": "tutorial",
-                    "command": "get",
-                    "promise": getRandomPromiseId(),
-                    "params": ""
-                };
-
-                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
-
-                if (window?.__native?.postJSONMessage) {
-                    window.__native.postJSONMessage(JSON.stringify(message));
-                } else {
-                    console.error('window.__native.postJSONMessage is not defined.');
-                    logMessage('Error: window.__native.postJSONMessage is not defined.');
-                }
-            });
-
-            // Placeholder event listeners for other buttons with logMessage calls
-            document.getElementById('cancelButton').addEventListener('click', function() {
-		let message = {
-                    "module": "tutorial",
-                    "command": "cancel",
-                    "promise": getRandomPromiseId(),
-                    "params": ""
-                };
-
-                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
-
-                if (window?.__native?.postJSONMessage) {
-                    window.__native.postJSONMessage(JSON.stringify(message));
-                } else {
-                    console.error('window.__native.postJSONMessage is not defined.');
-                    logMessage('Error: window.__native.postJSONMessage is not defined.');
-                }
-            });
-
-            document.getElementById('completeButton').addEventListener('click', function() {
-		let data = {
-		    "last_page": 1,
-		    "total_pages": 3
-		}
-		let message = {
-                    "module": "tutorial",
-                    "command": "complete",
-                    "promise": getRandomPromiseId(),
-                    "params": JSON.stringify(data)
-                };
-
-                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
-
-                if (window?.__native?.postJSONMessage) {
-                    window.__native.postJSONMessage(JSON.stringify(message));
-                } else {
-                    console.error('window.__native.postJSONMessage is not defined.');
-                    logMessage('Error: window.__native.postJSONMessage is not defined.');
-                }
-            });
-
-            document.getElementById('errorButton').addEventListener('click', function() {
-		let message = {
-                    "module": "tutorial",
-                    "command": "error",
-                    "promise": getRandomPromiseId(),
-                    "params": ""
-                };
-
-                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
-
-                if (window?.__native?.postJSONMessage) {
-                    window.__native.postJSONMessage(JSON.stringify(message));
-                } else {
-                    console.error('window.__native.postJSONMessage is not defined.');
-                    logMessage('Error: window.__native.postJSONMessage is not defined.');
-                }
-            });
-        });
-    </script>
 </head>
 <body>
     <div id="actionButtons">
@@ -128,5 +36,74 @@
     <div id="logArea">
         <h2 style="text-align: center;">Log Area</h2>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            function getNativeCommunicator() {
+                const userAgent = navigator.userAgent.toLowerCase();
+
+                const androidCommunicator = {
+                    sendMessage: function(message) {
+                        window.__native.postJSONMessage(JSON.stringify(message));
+                    }
+                };
+
+                const iosCommunicator = {
+                    sendMessage: function(message) {
+                        window.webkit.messageHandlers.__native.postMessage(message);
+                    }
+                };
+
+                if (/android/.test(userAgent)) {
+                    return androidCommunicator;
+                } else if (/iphone|ipad|ipod/.test(userAgent)) {
+                    return iosCommunicator;
+                } else {
+                    console.error('Unsupported platform or native interface not found.');
+                    return null;
+                }
+            }
+
+            const nativeCommunicator = getNativeCommunicator();
+
+            function getRandomPromiseId() {
+                return Math.random().toString(36).substring(2, 15);
+            }
+
+            function logMessage(message) {
+                const logArea = document.getElementById('logArea');
+                const messageElement = document.createElement('div');
+                messageElement.textContent = message;
+                logArea.prepend(messageElement);
+            }
+
+            document.getElementById('getButton').addEventListener('click', function() {
+                let message = {
+                    "module": "tutorial",
+                    "command": "get",
+                    "promise": getRandomPromiseId(),
+                    "params": ""
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+                if (nativeCommunicator) {
+                    nativeCommunicator.sendMessage(message);
+                }
+            });
+
+            // Placeholder event listeners for other buttons with logMessage calls
+            document.getElementById('cancelButton').addEventListener('click', function() {
+                logMessage('Cancel button clicked.');
+            });
+
+            document.getElementById('completeButton').addEventListener('click', function() {
+                logMessage('Complete button clicked.');
+            });
+
+            document.getElementById('errorButton').addEventListener('click', function() {
+                logMessage('Error button clicked.');
+            });
+        });
+    </script>
 </body>
 </html>
