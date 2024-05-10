@@ -93,15 +93,49 @@
 
             // Placeholder event listeners for other buttons with logMessage calls
             document.getElementById('cancelButton').addEventListener('click', function() {
-                logMessage('Cancel button clicked.');
+                let message = {
+                    "module": "tutorial",
+                    "command": "cancel",
+                    "promise": getRandomPromiseId(),
+                    "params": ""
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+                if (nativeCommunicator) {
+                    nativeCommunicator.sendMessage(message);
+                }
             });
 
             document.getElementById('completeButton').addEventListener('click', function() {
-                logMessage('Complete button clicked.');
+                let data = {
+        		    "last_page": 1,
+        		    "total_pages": 3
+        		}
+        		let message = {
+                    "module": "tutorial",
+                    "command": "complete",
+                    "promise": getRandomPromiseId(),
+                    "params": JSON.stringify(data)
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+                if (nativeCommunicator) {
+                    nativeCommunicator.sendMessage(message);
+                }
             });
 
             document.getElementById('errorButton').addEventListener('click', function() {
-                logMessage('Error button clicked.');
+                let message = {
+                    "module": "tutorial",
+                    "command": "error",
+                    "promise": getRandomPromiseId(),
+                    "params": ""
+                };
+
+                logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
+                if (nativeCommunicator) {
+                    nativeCommunicator.sendMessage(message);
+                }
             });
         });
     </script>
