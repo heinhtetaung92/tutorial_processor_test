@@ -125,11 +125,14 @@
             });
 
             document.getElementById('errorButton').addEventListener('click', function() {
+                let data = {
+        		    "message": "This is sample error from web app"
+        		}
                 let message = {
                     "module": "tutorial",
                     "command": "error",
                     "promise": getRandomPromiseId(),
-                    "params": ""
+                    "params": JSON.stringify(data)
                 };
 
                 logMessage('Get button clicked. Sending message: ' + JSON.stringify(message));
